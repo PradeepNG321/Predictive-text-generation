@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Predictive Text • Themed Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --muted: #667085;
+      --accent-1: #4f46e5; /* indigo */
+      --accent-2: #06b6d4; /* teal */
+      --chip-bg: #eef2ff;
+      --chip-border: #dbeafe;
+      --shadow-sm: 0 6px 18px rgba(12, 18, 33, 0.06);
+      --text: #0b1a2b;
+      --input-bg: #ffffff;
+      --input-border: #e6eef7;
+      --btn-bg: #ffffff;
+      --btn-text: #0b1a2b;
+    }
+
+    /* 🌙 Dark theme */
+    [data-theme="dark"] {
+      --bg: #0b0f19;
+      --card: #111827;
+      --muted: #a1acc4;
+      --accent-1: #818cf8;
+      --accent-2: #06b6d4;
+      --chip-bg: rgba(255, 255, 255, 0.08);
+      --chip-border: rgba(255, 255, 255, 0.12);
+      --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.5);
+      --text: #e3e8f5;
+      --input-bg: #1f2937;
+      --input-border: #374151;
+      --btn-bg: #1f2937;
+      --btn-text: #e3e8f5;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(180deg, var(--bg), rgba(0, 0, 0, 0) 60%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      min-height: 100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1000px;
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .branding {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.25);
+    }
+
+    .title { font-weight: 700; margin: 0; }
+    .subtitle { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+
+    select, button {
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      padding: 6px 10px;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+
+    select:hover, button:hover {
+      background: var(--accent-1);
+      color: white;
+      border-color: var(--accent-1);
+    }
+
+    .controls-top {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    textarea {
+      width: 100%;
+      height: 160px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text);
+      padding: 12px;
+      font-size: 15px;
+      resize: vertical;
+      outline: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    textarea::placeholder { color: var(--muted); }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-3px);
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .aside {
+      border-radius: 12px;
+      padding: 16px;
+      background: var(--input-bg);
+    }
+
+    .example {
+      border: 1px dashed var(--input-border);
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .example:hover { background: rgba(79, 70, 229, 0.15); }
+
+    .status-row {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(79, 70, 229, 0.18);
+      border-top-color: var(--accent-1);
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .insert-badge {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 100px;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      color: white;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      animation: floatUp 1s ease forwards;
+      pointer-events: none;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -80px) scale(0.95); }
+    }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .aside { order: 2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="branding">
+        <div class="logo">PT</div>
+        <div>
+          <div class="title">Predictive Text Generator</div>
+          <div class="subtitle">Baseline & Transformer — Live Suggestions</div>
+        </div>
+      </div>
+
+      <div class="controls-top">
+        <select id="modelSelect">
+          <option value="baseline">Baseline (n-gram)</option>
+          <option value="transformer" selected>Transformer (DistilGPT-2)</option>
+        </select>
+
+        <select id="kSelect">
+          <option>3</option><option selected>5</option><option>7</option>
+        </select>
+
+        <button id="themeBtn">🌙 Dark / Light</button>
+      </div>
+    </div>
+
+    <div>
+      <textarea id="editor" placeholder="Type: 'machine learning' or 'how are'"></textarea>
+      <div class="suggestions" id="suggestions"></div>
+      <div class="status-row">
+        <div>Backend: <strong id="backendUrl">http://127.0.0.1:8000</strong></div>
+        <div id="spinnerWrap" style="display:none;"><span class="spinner"></span></div>
+      </div>
+    </div>
+
+    <aside class="aside">
+      <div style="font-weight:600;margin-bottom:6px;">Examples (click to insert)</div>
+      <div class="example" data-text="machine learning">machine learning</div>
+      <div class="example" data-text="the united">the united</div>
+      <div class="example" data-text="this project">this project</div>
+      <div class="example" data-text="how are">how are</div>
+    </aside>
+  </div>
+
+  <script>
+    const BACKEND_BASE = "http://127.0.0.1:8000";
+    const ENDPOINTS = {
+      baseline: BACKEND_BASE + "/predict",
+      transformer: BACKEND_BASE + "/predict_transformer"
+    };
+
+    const editor = document.getElementById("editor");
+    const suggestionsDiv = document.getElementById("suggestions");
+    const modelSelect = document.getElementById("modelSelect");
+    const kSelect = document.getElementById("kSelect");
+    const spinnerWrap = document.getElementById("spinnerWrap");
+    const themeBtn = document.getElementById("themeBtn");
+    const examples = document.querySelectorAll(".example");
+
+    // --- Theme ---
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const currentTheme = saved || (prefersDark ? "dark" : "light");
+    setTheme(currentTheme);
+
+    themeBtn.onclick = () => {
+      const newTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      setTheme(newTheme);
+    };
+
+    function setTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+      localStorage.setItem("theme", theme);
+    }
+
+    // --- Suggestions ---
+    async function fetchSuggestions(text, k = 5) {
+      if (!text.trim()) return [];
+      spinnerWrap.style.display = "inline-block";
+      const url = ENDPOINTS[modelSelect.value];
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, k })
+        });
+        spinnerWrap.style.display = "none";
+        const data = await res.json();
+        return data.suggestions || [];
+      } catch (err) {
+        console.error(err);
+        spinnerWrap.style.display = "none";
+        return [];
+      }
+    }
+
+    function renderSuggestions(list) {
+      suggestionsDiv.innerHTML = "";
+      if (!list.length) return;
+      list.forEach(w => {
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.textContent = w;
+        chip.onclick = () => acceptSuggestion(w);
+        suggestionsDiv.appendChild(chip);
+      });
+    }
+
+    function acceptSuggestion(word) {
+    const text = editor.value.trimEnd(); // remove any trailing spaces
+    const sep = text.endsWith(" ") ? "" : " ";
+    editor.value = text + sep + word; // ⬅ no extra space now
+    renderSuggestions([]);
+    showInsertedBadge(word);
+
+    // 🔄 trigger new suggestion update automatically
+    const event = new Event("input", { bubbles: true });
+    editor.dispatchEvent(event);
+}
+
+
+    function showInsertedBadge(word) {
+      const badge = document.createElement("div");
+      badge.className = "insert-badge";
+      badge.textContent = "Inserted: " + word;
+      document.body.appendChild(badge);
+      setTimeout(() => badge.remove(), 1000);
+    }
+
+    editor.addEventListener("input", async () => {
+      const text = editor.value;
+      const k = parseInt(kSelect.value, 10);
+      const list = await fetchSuggestions(text, k);
+      renderSuggestions(list);
+    });
+
+    examples.forEach(ex =>
+      ex.addEventListener("click", () => {
+        editor.value = ex.dataset.text + " ";
+        editor.dispatchEvent(new Event("input"));
+      })
+    );
+  </script>
+</body>
+</html>
