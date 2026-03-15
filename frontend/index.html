@@ -333,6 +333,16 @@
     }
 
     function acceptSuggestion(word) {
+      const text = editor.value;
+      const sep = /\s$/.test(text) ? "" : " ";
+      editor.value = text + sep + word + " ";
+      renderSuggestions([]);
+      showInsertedBadge(word);
+    
+    
+    }
+
+    function acceptSuggestion(word) {
     const text = editor.value.trimEnd(); // remove any trailing spaces
     const sep = text.endsWith(" ") ? "" : " ";
     editor.value = text + sep + word; // ⬅ no extra space now
